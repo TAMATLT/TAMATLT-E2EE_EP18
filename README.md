@@ -26,7 +26,7 @@ Sometimes its handy to output the result of the script into the file, so that yo
 
 To use **runScript.lua** you run it like this:
 
-`lua ShellToFile.lua "command_you_want_to_run" <output_file>`
+`ShellToFile "command_you_want_to_run" <output_file>`
 
 where **<output_file>** is the file that will contain the output
 
