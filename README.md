@@ -1,5 +1,5 @@
 # TAMAT LT E2EE Ep18 Repository
-This repository contains examples I have used in Ep17 of my E2E:E Series
+This repository contains examples I have used in Ep18 of my E2E:E Series
 
 **If you are an expert in OpenComputers and see that some of these scripts mirror default functions or could be done better**
 **PLEASE let me know what could be changed in the Issues section**
