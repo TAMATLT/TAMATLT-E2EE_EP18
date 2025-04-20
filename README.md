@@ -20,6 +20,13 @@ If you do not know much about lua programming here is what you do:
 
 All of the scripts from this repository should be copied to home directory of your OpenOS in Minecraft
 
-## checkFilesystemLocation.lua
+## ShellToFile.lua
 
-Lets say you have made your 20th computer with OpenComputers mod, installed OpenOS, created a file there and now want to open this file with your editor outside of Minecraft.
+Sometimes its handy to output the result of the script into the file, so that you can copy the output for later use. For example if you use LLMs for script creation and want to transfer the error you observed to the LLM to fix the bug.
+
+To use **runScript.lua** you run it like this:
+
+`lua ShellToFile.lua "command_you_want_to_run" <output_file>`
+
+where **<output_file>** is the file that will contain the output
+
