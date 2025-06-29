@@ -89,3 +89,59 @@ return {
   }
 }
 ```
+
+## carpetedCapacitor.lua
+
+OpenComputers mod has a nice way of charging its components: *Carpeted Capacitors*. In E2EE *Carpeted Capacitors* have a hefty 600 Rf/t energy output if you let Ocelots run on them.
+
+The nice energy output of *Carpeted Capacitors* is offset by inability to easily extract the energy from them into other modpack items and blocks. But with some persistence it can be done and this script helps with that.
+
+Specifically this script provides an automated system for discharging battery upgrades using OpenComputers and Mekanism Energy Cubes in Minecraft.
+
+### You will need:
+
+- OpenComputers *Computer* with OpenOS isnatlled and this script copied into #home directory
+- *Transposer* component next to the *Computer*
+- *Charger* from OpenComputers next to the *Transposer*. *Charger* needs to get its energy from *Carpeted Capacitors* - that's the whole point!
+- *Energy* Cube from Mekanism next to the *Transposer*
+- *Battery Upgrade* from OpenComputers, any tier will do, but Tier 3 works best.
+
+This script automatically moves *Battery Upgrade* from a *Charger* to the *Energy Cube* for discharge, then returns them to the charger. 
+
+### Script Features
+
+- **Automatic Detection**: Finds connected chargers and energy cubes automatically
+- **One-Time Setup**: Guides you through initial configuration with clear instructions
+- **Smart Error Handling**: Distinguishes between empty batteries and setup issues
+- **Persistent Configuration**: Saves settings to avoid re-setup on restart
+- **User-Friendly**: Clear status messages and progress indicators
+
+### Setup
+
+On first run, the script will:
+
+1. **Auto-detect** connected inventories
+2. **Identify** the charger and energy cube automatically
+3. **Show setup instructions** for configuring the Energy Cube:  
+   **!!!SUPER IMPORTANT!!!**  
+   - Open the Energy Cube GUI
+   - Go to "Side Config" tab
+   - Click "Items" tab  
+   - Set the appropriate side (the one that points to the *Transoposer* to "Discharge" (Dark Red Color)  
+   **Without this Energy Cube's inventory is invisible to the Transposer!**
+5. **Save configuration** for future runs
+
+### Controls
+- **Ctrl+C**: Stop the script
+- The script runs continuously until manually stopped
+
+### Configuration File
+
+The script creates a `charger.conf` file with:
+```
+charger_side=X
+cube_side=Y  
+setup_complete=true
+```
+
+Delete this file to re-run the setup process.
