@@ -1,4 +1,7 @@
 -- ShellToFile.lua
+-- A Script designed to output result of a program in OpenComputers to a file.
+-- A good reason to do this would be a small computer screen
+-- and a better way to read a file would be outside of Minecraft
 
 -- Access arguments using ... (variable arguments)
 local arguments = {...}
