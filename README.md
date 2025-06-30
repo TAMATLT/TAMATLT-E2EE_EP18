@@ -104,7 +104,7 @@ Specifically this script provides an automated system for moving the energy betw
 - *Transposer* component next to the *Computer*
 - *Charger* from OpenComputers next to the *Transposer*. *Charger* needs to get its energy from *Carpeted Capacitors* - that's the whole point!
 - *Energy* Cube from Mekanism placed in the world next to the *Transposer*
-- Another *Energy Cube* to movr the energy around.
+- Another *Energy Cube* to move the energy around.
 
 This script automatically moves *Energy Cube* from the *Charger* to the *Energy Cube* for discharge, then returns the item to the charger. 
 
