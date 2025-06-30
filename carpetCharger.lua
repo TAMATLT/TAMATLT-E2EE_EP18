@@ -7,7 +7,7 @@ local os = require("os")
 
 -- Get the transposer component for moving items between inventories
 local trans = component.transposer
-local CONFIG_FILE = "cube_charger.conf"
+local CONFIG_FILE = "carpetCharger.conf"
 
 -- Convert numeric side IDs to readable names for user interface
 local sideNames = {
