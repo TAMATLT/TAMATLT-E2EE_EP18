@@ -1,5 +1,5 @@
--- Smart Battery Discharge Automation System for OpenComputers
--- Automatically moves battery upgrades from charger to Mekanism Energy Cube for discharge
+-- Smart Energy Cube Discharge Automation System for OpenComputers
+-- Automatically moves Energy Cubes from charger to Mekanism Energy Cube for discharge
 local component = require("component")
 local sides = require("sides")
 local io = require("io")
@@ -7,7 +7,7 @@ local os = require("os")
 
 -- Get the transposer component for moving items between inventories
 local trans = component.transposer
-local CONFIG_FILE = "charger.conf"
+local CONFIG_FILE = "cube_charger.conf"
 
 -- Convert numeric side IDs to readable names for user interface
 local sideNames = {
@@ -20,7 +20,7 @@ local sideNames = {
 -- Configuration storage - will be loaded from file or set during setup
 local config = {
     charger_side = nil,      -- Which side the charger is connected to
-    cube_side = nil,         -- Which side the energy cube is connected to
+    cube_side = nil,         -- Which side the stationary energy cube is connected to
     setup_complete = false   -- Whether initial setup has been completed
 }
 
@@ -86,7 +86,7 @@ local function detectInventories()
     return inventories
 end
 
--- Show setup instructions for configuring the Energy Cube
+-- Show setup instructions for configuring the stationary Energy Cube
 local function showSetupInstructions(cube_side)
     -- Map each side to its opposite side for cube configuration
     local oppositeSides = {
@@ -95,11 +95,11 @@ local function showSetupInstructions(cube_side)
         [sides.east] = sides.west, [sides.west] = sides.east
     }
     
-    -- The cube needs to be configured on the opposite side from where it's connected
+    -- The stationary cube needs to be configured on the opposite side from where it's connected
     local cubeConfigSide = oppositeSides[cube_side]
     
     print("SETUP REQUIRED:")
-    print("1. Open Energy Cube GUI")
+    print("1. Open stationary Energy Cube GUI")
     print("2. Go to 'Side Config' tab")
     print("3. Click 'Items' tab")
     print("4. Set " .. sideNames[cubeConfigSide]:upper() .. " side to")
@@ -113,7 +113,7 @@ local function runSetup()
     
     local inventories = detectInventories()
     
-    -- Try to automatically detect charger and energy cube
+    -- Try to automatically detect charger and stationary energy cube
     local charger_side, cube_side
     
     for side, info in pairs(inventories) do
@@ -143,10 +143,10 @@ local function runSetup()
     
     print("Detected:")
     print("Charger: " .. sideNames[charger_side])
-    print("Cube: " .. sideNames[cube_side])
+    print("Stationary Cube: " .. sideNames[cube_side])
     print("")
     
-    -- Show instructions for configuring the energy cube
+    -- Show instructions for configuring the stationary energy cube
     showSetupInstructions(cube_side)
     
     print("Press ENTER when done...")
@@ -160,28 +160,31 @@ local function runSetup()
     return true
 end
 
--- Check if an item is a battery upgrade
-local function isBattery(item)
+-- Check if an item is a Mekanism Energy Cube
+local function isEnergyCube(item)
     if not item then return false end
     
-    -- Check the item's display name first
+    -- Check the internal item name first (most reliable)
+    if item.name == "mekanism:energycube" then
+        return true
+    end
+    
+    -- Check the display name as backup
     if item.label then
         local label = item.label:lower()
-        if label:find("battery") and label:find("upgrade") then
+        if label:find("energy") and label:find("cube") then
             return true
         end
     end
     
-    -- Check the internal item name as backup
-    local name = item.name:lower()
-    return name:find("battery") and name:find("upgrade")
+    return false
 end
 
 -- Main automation loop - runs continuously
 local function runAutomation()
-    print("=== BATTERY AUTOMATION ===")
+    print("=== ENERGY CUBE AUTOMATION ===")
     print("Charger: " .. sideNames[config.charger_side])
-    print("Cube: " .. sideNames[config.cube_side])
+    print("Stationary Cube: " .. sideNames[config.cube_side])
     print("Press Ctrl+C to stop")
     print("")
     
@@ -194,17 +197,19 @@ local function runAutomation()
         -- Check what's in the first slot of the charger
         local item = trans.getStackInSlot(config.charger_side, 1)
         
-        if item and isBattery(item) then
+        if item and isEnergyCube(item) then
             local itemDesc = item.label or item.name
             print("Found: " .. itemDesc)
             
-            -- Try to move battery to energy cube for discharge
-            print("Moving to cube...")
+            -- Try to move Energy Cube to stationary cube for discharge
+            print("Moving to stationary cube...")
             local moved = trans.transferItem(config.charger_side, config.cube_side, 1)
             
             if moved > 0 then
                 print("Discharging...")
-                -- Move the battery back to the charger (cube will discharge it automatically)
+                -- Wait a moment for discharge to process
+                os.sleep(1)
+                -- Move the Energy Cube back to the charger (stationary cube will discharge it automatically)
                 local returned = trans.transferItem(config.cube_side, config.charger_side, 1)
                 
                 if returned > 0 then
@@ -212,14 +217,14 @@ local function runAutomation()
                     hasWorkedBefore = true
                     failCount = 0
                 else
-                    print("Failed to retrieve battery!")
+                    print("Failed to retrieve Energy Cube!")
                     failCount = failCount + 1
                 end
             else
-                -- Transfer failed - could be empty battery or setup issue
+                -- Transfer failed - could be empty cube or setup issue
                 if hasWorkedBefore then
-                    -- If it worked before, probably just an empty battery
-                    print("Battery empty, skipping...")
+                    -- If it worked before, probably just an empty cube
+                    print("Energy Cube empty, skipping...")
                     failCount = 0
                 else
                     -- If it never worked, likely a setup problem
@@ -237,11 +242,11 @@ local function runAutomation()
                 end
             end
         else
-            -- No battery or wrong item in charger
+            -- No Energy Cube or wrong item in charger
             if item then
-                print("Non-battery: " .. (item.label or item.name))
+                print("Non-cube item: " .. (item.label or item.name))
             else
-                print("No battery in charger")
+                print("No Energy Cube in charger")
             end
         end
         
@@ -264,7 +269,7 @@ local function runAutomation()
 end
 
 -- Main program execution
-print("BATTERY DISCHARGE SYSTEM")
+print("ENERGY CUBE DISCHARGE SYSTEM")
 
 -- Try to load existing configuration
 local configLoaded = loadConfig()
