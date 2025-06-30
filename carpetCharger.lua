@@ -79,7 +79,7 @@ local function detectInventories()
             -- Get the name of the connected inventory
             local name = trans.getInventoryName(side) or "Unknown"
             inventories[side] = {size = size, name = name}
-            print(sideNames[side] .. ": " .. name)
+            print("  " .. sideNames[side] .. ": " .. name)
         end
     end
     
@@ -87,30 +87,20 @@ local function detectInventories()
 end
 
 -- Show setup instructions for configuring the stationary Energy Cube
-local function showSetupInstructions(cube_side)
-    -- Map each side to its opposite side for cube configuration
-    local oppositeSides = {
-        [sides.up] = sides.down, [sides.down] = sides.up,
-        [sides.north] = sides.south, [sides.south] = sides.north,
-        [sides.east] = sides.west, [sides.west] = sides.east
-    }
-    
-    -- The stationary cube needs to be configured on the opposite side from where it's connected
-    local cubeConfigSide = oppositeSides[cube_side]
-    
+local function showSetupInstructions()
     print("SETUP REQUIRED:")
-    print("1. Open stationary Energy Cube GUI")
-    print("2. Go to 'Side Config' tab")
-    print("3. Click 'Items' tab")
-    print("4. Set " .. sideNames[cubeConfigSide]:upper() .. " side to")
+    print("1. Place the stationary Energy Cube next to the Transposer")
+    print("2. Open the Energy Cube GUI")
+    print("3. Go to 'Side Config' tab")
+    print("4. Click 'Items' tab")
+    print("5. Set the side touching the Transposer to")
     print("   'Discharge' (Dark Red)")
+    print("6. Place Charger next to the Transposer")
     print("")
 end
 
--- First-time setup process to detect and configure components
-local function runSetup()
-    print("=== FIRST TIME SETUP ===")
-    
+-- Try to detect both charger and energy cube
+local function detectComponents()
     local inventories = detectInventories()
     
     -- Try to automatically detect charger and stationary energy cube
@@ -127,37 +117,69 @@ local function runSetup()
         end
     end
     
-    -- Make sure both components were found
-    if not charger_side or not cube_side then
-        print("Could not detect components!")
-        print("Available:")
-        for side, info in pairs(inventories) do
-            print("  " .. sideNames[side] .. ": " .. info.name)
-        end
-        return false
-    end
-    
-    -- Save the detected sides
-    config.charger_side = charger_side
-    config.cube_side = cube_side
-    
-    print("Detected:")
-    print("Charger: " .. sideNames[charger_side])
-    print("Stationary Cube: " .. sideNames[cube_side])
+    return charger_side, cube_side, inventories
+end
+
+-- First-time setup process to detect and configure components
+local function runSetup()
+    print("=== FIRST TIME SETUP ===")
     print("")
     
-    -- Show instructions for configuring the stationary energy cube
-    showSetupInstructions(cube_side)
+    -- Show initial setup instructions
+    showSetupInstructions()
     
-    print("Press ENTER when done...")
-    io.read()  -- Wait for user to press enter
-    
-    -- Mark setup as complete and save configuration
-    config.setup_complete = true
-    saveConfig()
-    
-    print("Setup complete!")
-    return true
+    while true do
+        print("Press ENTER when setup is complete...")
+        io.read()  -- Wait for user to press enter
+        print("")
+        
+        -- Try to detect components after user input
+        local charger_side, cube_side, inventories = detectComponents()
+        
+        -- Check if both components were found
+        if charger_side and cube_side then
+            -- Both found! Save configuration
+            config.charger_side = charger_side
+            config.cube_side = cube_side
+            config.setup_complete = true
+            
+            print("SUCCESS! Detected:")
+            print("  Charger: " .. sideNames[charger_side])
+            print("  Stationary Cube: " .. sideNames[cube_side])
+            print("")
+            
+            saveConfig()
+            print("Setup complete!")
+            return true
+            
+        else
+            -- Something is still missing
+            print("SETUP INCOMPLETE!")
+            print("")
+            print("Currently detected:")
+            if next(inventories) then
+                for side, info in pairs(inventories) do
+                    print("  " .. sideNames[side] .. ": " .. info.name)
+                end
+            else
+                print("  No inventories detected")
+            end
+            print("")
+            
+            -- Show what's missing
+            if not charger_side then
+                print("MISSING: Charger (no inventory with 'charger' in name)")
+            end
+            if not cube_side then
+                print("MISSING: Energy Cube (no inventory with 'cube' or 'energy' in name)")
+                print("  Make sure the cube side touching the Transposer is set to 'Discharge'!")
+            end
+            print("")
+            
+            -- Show setup instructions again
+            showSetupInstructions()
+        end
+    end
 end
 
 -- Check if an item is a Mekanism Energy Cube
@@ -229,14 +251,15 @@ local function runAutomation()
                 else
                     -- If it never worked, likely a setup problem
                     print("Transfer failed!")
-                    print("Likely setup issue.")
+                    print("Likely setup issue - cube side may not be set to 'Discharge'")
                     failCount = failCount + 1
                     
-                    -- Show setup instructions after several failures
+                    -- Show setup reminder after several failures
                     if failCount >= 3 then
                         print("")
-                        print("Setup might be wrong:")
-                        showSetupInstructions(config.cube_side)
+                        print("REMINDER: Energy Cube side touching Transposer")
+                        print("must be set to 'Discharge' (Dark Red) in Side Config!")
+                        print("")
                         failCount = 0
                     end
                 end
@@ -246,7 +269,7 @@ local function runAutomation()
             if item then
                 print("Non-cube item: " .. (item.label or item.name))
             else
-                print("No Energy Cube in charger")
+                print("No Energy Cube in Charger")
             end
         end
         
