@@ -185,7 +185,7 @@ local function runAutomation()
     print("=== ENERGY CUBE AUTOMATION ===")
     print("Charger: " .. sideNames[config.charger_side])
     print("Stationary Cube: " .. sideNames[config.cube_side])
-    print("Press Ctrl+C to stop")
+    print("Press Alt+Ctrl+C to stop")
     print("")
     
     -- Track if we've had successful transfers (helps with error handling)
