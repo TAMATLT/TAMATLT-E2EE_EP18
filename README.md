@@ -96,23 +96,23 @@ OpenComputers mod has a nice way of charging its components: *Carpeted Capacitor
 
 The nice energy output of *Carpeted Capacitors* is offset by inability to easily extract the energy from them into other modpack items and blocks. But with some persistence it can be done and this script helps with that.
 
-Specifically this script provides an automated system for discharging battery upgrades using OpenComputers and Mekanism Energy Cubes in Minecraft.
+Specifically this script provides an automated system for moving the energy between Charger and Startionary Energy Cube from Mekanism using another Energy Cube.
 
 ### You will need:
 
 - OpenComputers *Computer* with OpenOS isnatlled and this script copied into #home directory
 - *Transposer* component next to the *Computer*
 - *Charger* from OpenComputers next to the *Transposer*. *Charger* needs to get its energy from *Carpeted Capacitors* - that's the whole point!
-- *Energy* Cube from Mekanism next to the *Transposer*
-- *Battery Upgrade* from OpenComputers, any tier will do, but Tier 3 works best.
+- *Energy* Cube from Mekanism placed in the world next to the *Transposer*
+- Another *Energy Cube* to movr the energy around.
 
-This script automatically moves *Battery Upgrade* from a *Charger* to the *Energy Cube* for discharge, then returns them to the charger. 
+This script automatically moves *Energy Cube* from the *Charger* to the *Energy Cube* for discharge, then returns the item to the charger. 
 
 ### Script Features
 
 - **Automatic Detection**: Finds connected chargers and energy cubes automatically
 - **One-Time Setup**: Guides you through initial configuration with clear instructions
-- **Smart Error Handling**: Distinguishes between empty batteries and setup issues
+- **Smart Error Handling**: Distinguishes between empty cube on transfer and setup issues
 - **Persistent Configuration**: Saves settings to avoid re-setup on restart
 - **User-Friendly**: Clear status messages and progress indicators
 
@@ -121,8 +121,8 @@ This script automatically moves *Battery Upgrade* from a *Charger* to the *Energ
 On first run, the script will:
 
 1. **Auto-detect** connected inventories
-2. **Identify** the charger and energy cube automatically
-3. **Show setup instructions** for configuring the Energy Cube:  
+2. **Identify** the charger and stationary energy cube automatically
+3. **Show setup instructions** for configuring the stationary Energy Cube:  
    **!!!SUPER IMPORTANT!!!**  
    - Open the Energy Cube GUI
    - Go to "Side Config" tab
@@ -132,7 +132,7 @@ On first run, the script will:
 5. **Save configuration** for future runs
 
 ### Controls
-- **Ctrl+C**: Stop the script
+- **Alt+Ctrl+C**: Stop the script
 - The script runs continuously until manually stopped
 
 ### Configuration File
